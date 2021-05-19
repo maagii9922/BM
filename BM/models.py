@@ -19,10 +19,16 @@ class Company(models.Model):
         verbose_name = _("Компани")
         verbose_name_plural = _("Компани")
 
+class ProdType(models.Model):
+    pass
+
+class State(models.Model):
+    pass
+
 class Product(models.Model):
     pName = models.CharField(max_length=50, verbose_name=_("Барааны нэр"))
     zCode = models.IntegerField(null=True, blank=True, verbose_name=_("Зураасан код"))
-    pType = models.IntegerField(null=True, blank=True, verbose_name=_("Барааны төрөл"))
+    pType = models.ForeignKey(ProdType, on_delete=models.CASCADE)
     zzCode = models.IntegerField(null=True, blank=True, verbose_name=_("Нэмэлт зураасан код"))
     price = models.IntegerField(null=True, blank=True, verbose_name=_("Үнэ"))
     hemNegj = models.IntegerField(null=True, blank=True, verbose_name=_("Хэмжих нэгж"))
@@ -36,7 +42,7 @@ class Product(models.Model):
     category = models.CharField(max_length=50, verbose_name=_("Дотоод ангилал"))
     borBoloh = models.CharField(max_length=50, verbose_name=_("Борлуулж болох"))
     hudAwch = models.CharField(max_length=50, verbose_name=_("Худалдан авч болох"))
-    state = models.IntegerField(null=True, blank=True, verbose_name=_("Төлөв"))
+    state = models.ForeignKey(State, on_delete=models.CASCADE)
 
 
     class Meta:
