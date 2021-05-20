@@ -1,34 +1,44 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-class Hereglegch(models.Model):
-    name = models.CharField(max_length=30, verbose_name=_("Хэрэглэгчийн нэр"))
-    code = models.CharField(max_length=30, verbose_name=_("Хэрэглэгчийн код"))
+class Customer(models.Model):
+    name = models.CharField(max_length=30, verbose_name=_("Харилцагчийн нэр"))
+    code = models.CharField(max_length=30, verbose_name=_("Харилцагчийн код"))
+    # company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    mail = models.CharField(max_length=50, verbose_name=_("Компаний майл"))
+    password = models.CharField(max_length=50, verbose_name=_("Майлын нууц үг"))
 
     class Meta:
-        verbose_name = _("Хэрэглэгч")
-        verbose_name_plural = _("Хэрэглэгч")
+        verbose_name = _("Харилцагч")
+        verbose_name_plural = _("Харилцагч")
 
 class Company(models.Model):
     comName = models.CharField(max_length=50, verbose_name=_("Компаний нэр"))
-    mail = models.CharField(max_length=50, verbose_name=_("Компаний майл"))
-    password = models.CharField(max_length=50, verbose_name=_("Майлын нууц үг"))
-    password2 = models.CharField(max_length=50, verbose_name=_("Майлын нууц үг давтах"))
+    hayag = models.CharField(max_length=150, verbose_name=_("Компаний хаяг"))
+    phone = models.CharField(max_length=30, verbose_name=_("Компаний утас"))
 
     class Meta:
         verbose_name = _("Компани")
         verbose_name_plural = _("Компани")
 
 class ProdType(models.Model):
-    pass
+    typeName = models.CharField(max_length=50, verbose_name=_("Төрлийн нэр"))
+
+    class Meta:
+        verbose_name = _("Барааны төрөл")
+        verbose_name_plural = _("Барааны төрөл")
 
 class State(models.Model):
-    pass
+    stateName = models.CharField(max_length=50, verbose_name=_("Төлөвийн нэр"))
+
+    class Meta:
+        verbose_name = _("Барааны төлөв")
+        verbose_name_plural = _("Барааны төлөв")
 
 class Product(models.Model):
-    pName = models.CharField(max_length=50, verbose_name=_("Барааны нэр"))
+    prodName = models.CharField(max_length=50, verbose_name=_("Барааны нэр"))
     zCode = models.IntegerField(null=True, blank=True, verbose_name=_("Зураасан код"))
-    pType = models.ForeignKey(ProdType, on_delete=models.CASCADE)
+    prodType = models.ForeignKey(ProdType, on_delete=models.CASCADE)
     zzCode = models.IntegerField(null=True, blank=True, verbose_name=_("Нэмэлт зураасан код"))
     price = models.IntegerField(null=True, blank=True, verbose_name=_("Үнэ"))
     hemNegj = models.IntegerField(null=True, blank=True, verbose_name=_("Хэмжих нэгж"))
