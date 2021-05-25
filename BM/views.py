@@ -40,13 +40,6 @@ def home(request):
     # customer.company = company
     # customer.save()
     # print(customer)
-
-    # company = Company(comName = 'sss', hayag = 'ss', phone = 999)
-    # company.save()
-    # customer = Customer.objects.get(pk = 1)
-    # customer.company = company
-    # customer.save()
-    # print(customer)
     
     # company = Company(comName = 'qq', hayag = 'qq', phone = 333)
     # company.save()
@@ -54,19 +47,25 @@ def home(request):
     # customer.save()
     # print(customer)
 
-    category = Category (catName = 'dd')
-    category.save()
-    prodType = ProdType (typeName = 'buts')
-    prodType.save()
-    state = State (stateName = 'ccc')
-    state.save()
-    company = Company(comName = 'qq', hayag = 'qq', phone = 333)
-    company.save()
-    customer = Customer(name = 'nomuka',code = '12',company = company,mail = 'nnn',password = '2112')
-    customer.save()
-    products = Product (prodName = 'xx',zCode = 12,prodType = prodType,zzCode = 1212,price = 2323,hemNegj = 1,hudNegj = 1,company = company,erNershil = 'dd',emHelber = 'tab',paiz = 'hh',uildwerlegch = 'vvv',uNiiluulegch = 'sss',category = category,borBoloh = 'no',hudAwch = 'no',state = state)
-    products.save()
-    print(products)
+    # category = Category (catName = 'dd')
+    # category.save()
+    # prodType = ProdType (typeName = 'buts')
+    # prodType.save()
+    # state = State (stateName = 'ccc')
+    # state.save()
+    # company = Company(comName = 'qq', hayag = 'qq', phone = 333)
+    # company.save()
+    # customer = Customer(name = 'nomuka',code = '12',company = company,mail = 'nnn',password = '2112')
+    # customer.save()
+    # products = Product (prodName = 'xx',zCode = 12,prodType = prodType,zzCode = 1212,price = 2323,hemNegj = 1,hudNegj = 1,company = company,erNershil = 'dd',emHelber = 'tab',paiz = 'hh',uildwerlegch = 'vvv',uNiiluulegch = 'sss',category = category,borBoloh = 'no',hudAwch = 'no',state = state)
+    # products.save()
+    # print(products)
+
+    # products = Product.objects.get(company__id = 1)
+    # print(products)
+
+    # products = Product.objects.get(company__comName = 'qq')
+    # print(products)
 
     return HttpResponse("hello")
 
@@ -96,15 +95,13 @@ def product_detail(request, pk):
 
 @api_view(["GET"])
 @permission_classes([])
-def product_state(request):
-        
+def product_state(request):        
     if request.method == "GET":
         products = Product.objects.get(state=1)
         products.save()
         print(products)
         serializer = ProductSerializer(products)
         return Response(serializer.data)
-
         
 @api_view(["GET"])
 @permission_classes([])
@@ -113,7 +110,6 @@ def company_list(request):
         company = Company.objects.all()
         serializer = CompanySerializer(company,many=True)
         return Response(serializer.data)
-
 
 @api_view(["GET"])
 @permission_classes([])

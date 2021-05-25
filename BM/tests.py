@@ -1,5 +1,6 @@
+from django.db.models.base import Model
 from rest_framework import pagination
-from BM.models import Test
+from BM.models import Test,Test2
 from django.db import models
 from django.db.models import fields
 from rest_framework import serializers, status
@@ -58,5 +59,118 @@ def test_detial2(request, pk):
         result_page = pagination.paginate_queryset(test, request)
         serializer = TestSerializer(result_page, many=True)
         return Response(serializer.data) 
+
+
+
+
+# class Test2(models.Model):
+#     name = models.CharField(max_length=50)
+
+#     def __str__(self) :
+#         return self.name
+
+# class Test2Serializer(serializers.ModelSerializer):
+#     class Meta:
+#         depth: 1
+#         model: Test2
+#         fields: "__all__"
+        
+
+# @api_view(["GET"])
+# @permission_classes([])
+# def test2(request):
+#     if request.method == "GET":
+#         test2 = Test2.objects.all()
+#         serializers = Test2Serializer(test2,many = True)
+#         return Response(serializers.data)
+
+
+# @api_view(["GET"])
+# @permission_classes([])
+# def test2_detail(request,pk):
+#     try:
+#         test2 = Test2.objects.get(pk=pk)
+#     except Test2.DoesNotExist:
+#         return Response(status = status.HTTP_404_NOT_FOUND)
+
+#     if request.method == "GET":
+#         serializers = Test2Serializer(test2)
+#         return Response(serializers.data)
+
+
+# @api_view(["GET"])
+# @permission_classes([])
+# def test2_detail2(request):
+#     if request.method == "GET":
+#         pagination = PageNumberPagination()
+#         if 'size' in request.GET:
+#             pagination.page_size = request.GET['size']
+#             test2 = Test2.objects.all()
+#             result_page = pagination.paginate_queryset(test2,request)
+#             serializers = Test2Serializer(result_page,many = True)
+#             return Response(serializers.data)
+    
+# @api_view(["GET"])
+# @permission_classes([])
+# def test2_detail2(request):
+#     if request.method == "GET":
+#         pagination = PageNumberPagination()
+#         if 'size' in request.GET:
+#             pagination.page_size = request.GET['size']
+#             test2 = Test2.objects.all()
+#             resuilt_page =pagination.paginate_queryset(test2,request)
+#             serializers = Test2Serializer(resuilt_page,many = True)
+#             return Response(serializers.data)
+
+
+# class Test2(models.Model):
+#     name = models.CharField(max_length=50)
+
+#     def __str__(self) :
+#         return self.name
+
+# class Test2Serializer(serializers.ModelSerializer):
+#     class Meta:
+#         depth: 1
+#         model: Test2
+#         fields: "__all__"
+        
+
+# @api_view(["GET"])
+# @permission_classes([])
+# def test2(request):
+#     if request.method == "GET":
+#         test2 = Test2.objects.all()
+#         serializers = Test2Serializer(test2,many = True)
+#         return Response(serializers.data)
+
+
+# @api_view(["GET"])
+# @permission_classes([])
+# def test2_detail(request,pk):
+#     try:
+#         test2 = Test2.objects.get(pk=pk)
+#     except Test2.DoesNotExist:
+#         return Response(status = status.HTTP_404_NOT_FOUND)
+
+#     if request.method == "GET":
+#         serializers = Test2Serializer(test2)
+#         return Response(serializers.data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
