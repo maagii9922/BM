@@ -1,13 +1,16 @@
+import re
 from django.http import HttpResponse
+from django.urls.resolvers import _route_to_regex
 from rest_framework import pagination
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 from .models import Category, Customer, Product,Company,State,ProdType
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import ProductSerializer,CompanySerializer,CustomerSerializer
+from .serializers import ProductSerializer,CompanySerializer,CategorySerializer,ProdTypeSerializer,StateSerializer,CustomerSerializer
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
+from django.db.models import Count
 
 
 def home(request):
@@ -69,6 +72,10 @@ def home(request):
 
     return HttpResponse("hello")
 
+"""
+products
+"""
+
 @api_view(["GET"])
 @permission_classes([])
 def product_list(request):
@@ -93,24 +100,271 @@ def product_detail(request, pk):
         serializer = ProductSerializer(product)
         return Response(serializer.data)
 
-@api_view(["GET"])
-@permission_classes([])
-def product_state(request):        
-    if request.method == "GET":
-        products = Product.objects.get(state=1)
-        products.save()
-        print(products)
-        serializer = ProductSerializer(products)
-        return Response(serializer.data)
-        
-@api_view(["GET"])
+# @api_view(["GET"])
+# @permission_classes([])
+# def product_state(request):        
+#     if request.method == "GET":
+#         products = Product.objects.get(state=1)
+#         products.save()
+#         print(products)
+#         serializer = ProductSerializer(products)
+#         return Response(serializer.data)
+
+"""
+company
+"""
+
+@api_view(["GET","POST"])
 @permission_classes([])
 def company_list(request):
     if request.method == "GET":
         company = Company.objects.all()
         serializer = CompanySerializer(company,many=True)
         return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = CompanySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
+    
+@api_view(["GET","PUT","DELETE"])
+@permission_classes([])
+def company_detail(request,pk):
+    try:
+        company = Company.objects.get(pk=pk)
+    except Company.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
+    if request.method == "GET":
+        serializers =CompanySerializer(company)
+        return Response(serializers.data)
+
+    elif request.method == "PUT":
+        serializers = CompanySerializer(company, data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        company.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["GET"])
+@permission_classes([])
+def company_filter(request):
+    # company = Company.objects.filter(comName='w', hayag='aaaaa')
+    print(request.GET)
+    f = {}
+    for k in request.GET:   #{'comName': ['hyg'], 'hayag': ['qq1'], 'phone': ['78']}
+        # print(request.GET[k])
+        f[k] = request.GET[k]   #{'comName': 'hyg', 'hayag': 'qq1', 'phone': '78'}
+    # print(f)
+    company = Company.objects.filter(**f)
+    serializers =CompanySerializer(company,many=True)
+    return Response(serializers.data)
+
+@api_view(["GET"])
+@permission_classes([])
+def company_product(request,pk):
+    c = Company.objects.get(pk=pk)
+    # company = c.product_set.all()
+    # print(company)
+    serializers =CompanySerializer(c)
+    return Response(serializers.data)
+
+
+# @api_view(["GET"])
+# @permission_classes([])
+# def company_count(request):
+#     company = Company.objects.filter(**f).count()
+
+"""
+category
+"""
+
+@api_view(["GET","POST"])
+@permission_classes([])
+def category_list(request):
+    if request.method == "GET":
+        category = Category.objects.all()
+        serializer = CategorySerializer(category,many=True)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
+    
+@api_view(["GET","PUT","DELETE"])
+@permission_classes([])
+def category_detail(request,pk):
+    try:
+        category = Category.objects.get(pk=pk)
+    except Category.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializers =CategorySerializer(category)
+        return Response(serializers.data)
+
+    elif request.method == "PUT":
+        serializers = CategorySerializer(category, data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["GET"])
+@permission_classes([])
+def category_filter(request):
+    # company = Company.objects.filter(comName='w', hayag='aaaaa')
+    print(request.GET)
+    f = {}
+    for k in request.GET:   #{'comName': ['hyg'], 'hayag': ['qq1'], 'phone': ['78']}
+        # print(request.GET[k])
+        f[k] = request.GET[k]   #{'comName': 'hyg', 'hayag': 'qq1', 'phone': '78'}
+    # print(f)
+    category = Category.objects.filter(**f)
+    serializers =CategorySerializer(category,many=True)
+    return Response(serializers.data)
+
+@api_view(["GET"])
+@permission_classes([])
+def category_product(request,pk):
+    c = Category.objects.get(pk=pk)
+    serializers =CategorySerializer(c)
+    return Response(serializers.data)
+
+"""
+prodType
+"""
+
+@api_view(["GET","POST"])
+@permission_classes([])
+def prodType_list(request):
+    if request.method == "GET":
+        prodType = ProdType.objects.all()
+        serializer = ProdTypeSerializer(prodType,many=True)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = ProdTypeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
+    
+@api_view(["GET","PUT","DELETE"])
+@permission_classes([])
+def prodType_detail(request,pk):
+    try:
+        prodType = ProdType.objects.get(pk=pk)
+    except ProdType.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializers =ProdTypeSerializer(prodType)
+        return Response(serializers.data)
+
+    elif request.method == "PUT":
+        serializers = ProdTypeSerializer(prodType, data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        prodType.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["GET"])
+@permission_classes([])
+def prodType_filter(request):
+    # company = Company.objects.filter(comName='w', hayag='aaaaa')
+    print(request.GET)
+    f = {}
+    for k in request.GET:   #{'comName': ['hyg'], 'hayag': ['qq1'], 'phone': ['78']}
+        # print(request.GET[k])
+        f[k] = request.GET[k]   #{'comName': 'hyg', 'hayag': 'qq1', 'phone': '78'}
+    # print(f)
+    prodType = ProdType.objects.filter(**f)
+    serializers =ProdTypeSerializer(prodType,many=True)
+    return Response(serializers.data)
+
+@api_view(["GET"])
+@permission_classes([])
+def prodType_product(request,pk):
+    c = ProdType.objects.get(pk=pk)
+    serializers =ProdTypeSerializer(c)
+    return Response(serializers.data)
+
+"""
+state
+"""
+
+@api_view(["GET","POST"])
+@permission_classes([])
+def state_list(request):
+    if request.method == "GET":
+        state = State.objects.all()
+        serializer = StateSerializer(state,many=True)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = StateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
+    
+@api_view(["GET","PUT","DELETE"])
+@permission_classes([])
+def state_detail(request,pk):
+    try:
+        state = State.objects.get(pk=pk)
+    except State.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializers =StateSerializer(state)
+        return Response(serializers.data)
+
+    elif request.method == "PUT":
+        serializers = StateSerializer(state, data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        state.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["GET"])
+@permission_classes([])
+def state_filter(request):
+    print(request.GET)
+    f = {}
+    for k in request.GET:  
+        f[k] = request.GET[k]  
+    state = State.objects.filter(**f)
+    serializers =StateSerializer(state,many=True)
+    return Response(serializers.data)
+
+@api_view(["GET"])
+@permission_classes([])
+def state_product(request,pk):
+    c = State.objects.get(pk=pk)
+    serializers =StateSerializer(c)
+    return Response(serializers.data)
+"""
+customer
+"""
 @api_view(["GET"])
 @permission_classes([])
 def customer_list(request):

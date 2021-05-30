@@ -61,22 +61,22 @@ class State(models.Model):
 class Product(models.Model):
     prodName = models.CharField(max_length=50, verbose_name=_("Барааны нэр"))
     zCode = models.IntegerField(null=True, blank=True, verbose_name=_("Зураасан код"))
-    prodType = models.ForeignKey(ProdType, on_delete=models.CASCADE)
+    prodType = models.ForeignKey(ProdType, related_name='products',on_delete=models.CASCADE)
     zzCode = models.IntegerField(null=True, blank=True, verbose_name=_("Нэмэлт зураасан код"))
     price = models.IntegerField(null=True, blank=True, verbose_name=_("Үнэ"))
     hemNegj = models.IntegerField(null=True, blank=True, verbose_name=_("Хэмжих нэгж"))
     hudNegj = models.IntegerField(null=True, blank=True, verbose_name=_("Худалдан авалтын нэгж"))
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company,related_name='products', on_delete=models.CASCADE)
     erNershil = models.CharField(max_length=50, verbose_name=_("Ерөнхий нэршил"))
     emHelber = models.CharField(max_length=50, verbose_name=_("Эмийн хэлбэр"))
     paiz = models.CharField(max_length=50, verbose_name=_("Пайз"))
     uildwerlegch = models.CharField(max_length=50, verbose_name=_("Үйлдвэрлэгч"))
     uNiiluulegch = models.CharField(max_length=50, verbose_name=_("Үндсэн нийлүүлэгч"))
     # category = models.CharField(max_length=50, verbose_name=_("Дотоод ангилал"))
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category,related_name='products', on_delete=models.CASCADE)
     borBoloh = models.CharField(max_length=50, verbose_name=_("Борлуулж болох"))
     hudAwch = models.CharField(max_length=50, verbose_name=_("Худалдан авч болох"))
-    state = models.ForeignKey(State, on_delete=models.CASCADE)
+    state = models.ForeignKey(State,related_name='products', on_delete=models.CASCADE)
 
 
     class Meta:

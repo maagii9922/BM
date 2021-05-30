@@ -1,12 +1,13 @@
 from django.db.models import fields
 from rest_framework import serializers
-from .models import Product,ProdType,State,Company,Customer
+from .models import Category, Product,ProdType,State,Company,Customer
 from BM import models
 
 class ProductSerializer(serializers.ModelSerializer):
     comName = serializers.CharField(source='company.comName')
-    hayag = serializers.CharField(source='company.hayag')
-    phone = serializers.CharField(source='company.phone')
+    # hayag = serializers.CharField(source='company.hayag')
+    # phone = serializers.CharField(source='company.phone')
+    catName = serializers.CharField(source='category.catName')
     typeName = serializers.CharField(source='prodType.typeName')
     stateName = serializers.CharField(source='state.stateName')
 
@@ -23,14 +24,14 @@ class ProductSerializer(serializers.ModelSerializer):
             "hemNegj",
             "hudNegj",
             "comName",
-            "hayag",
-            "phone",
+            # "hayag",
+            # "phone",
             "erNershil",
             "emHelber",
             "paiz",
             "uildwerlegch",
             "uNiiluulegch",
-            "category",
+            "catName",
             "borBoloh",
             "hudAwch",
             "stateName",
@@ -38,6 +39,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class CompanySerializer(serializers.ModelSerializer):
+    products = serializers.StringRelatedField(many = True)
 
     class Meta:
         depth = 1
@@ -47,6 +49,44 @@ class CompanySerializer(serializers.ModelSerializer):
             "comName",
             "hayag",
             "phone",
+            "products"
+        ]
+
+class CategorySerializer(serializers.ModelSerializer):
+    products = serializers.StringRelatedField(many = True)
+
+    class Meta:
+        depth = 1
+        model = Category
+
+        fields = [
+            "catName",
+            "products"
+        ]
+
+class ProdTypeSerializer(serializers.ModelSerializer):
+    products = serializers.StringRelatedField(many = True)
+
+    class Meta:
+        depth = 1
+        model = ProdType
+
+        fields = [
+            "typeName",
+            "products"
+        ]
+
+
+class StateSerializer(serializers.ModelSerializer):
+    products = serializers.StringRelatedField(many = True)
+
+    class Meta:
+        depth = 1
+        model = State
+
+        fields = [
+            "stateName",
+            "products"
         ]
 
 class CustomerSerializer(serializers.ModelSerializer):
