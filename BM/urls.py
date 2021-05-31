@@ -26,6 +26,10 @@ urlpatterns = [
     path('company/<int:pk>',views.company_detail),
     path('company/filter',views.company_filter),
     path('company/product/<int:pk>',views.company_product),
+    # path('company/filter/count',views.company_count),
+    path('customer', views.customer_list),
+    path('customer/<int:pk>',views.customer_detail),
+    path('customer/filter',views.customer_filter),
     path('category',views.category_list),
     path('category/<int:pk>',views.category_detail),
     path('category/filter',views.category_filter),
@@ -38,7 +42,5 @@ urlpatterns = [
     path('state/<int:pk>',views.state_detail),
     path('state/filter',views.state_filter),
     path('state/product/<int:pk>',views.state_product),
-    # path('company/filter/count',views.company_count),
-    path('customer', views.customer_list),
     # path('product/state', views.product_state),
 ]

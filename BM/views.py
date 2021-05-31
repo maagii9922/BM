@@ -1,4 +1,5 @@
 import re
+from django.core import paginator
 from django.http import HttpResponse
 from django.urls.resolvers import _route_to_regex
 from rest_framework import pagination
@@ -100,15 +101,6 @@ def product_detail(request, pk):
         serializer = ProductSerializer(product)
         return Response(serializer.data)
 
-# @api_view(["GET"])
-# @permission_classes([])
-# def product_state(request):        
-#     if request.method == "GET":
-#         products = Product.objects.get(state=1)
-#         products.save()
-#         print(products)
-#         serializer = ProductSerializer(products)
-#         return Response(serializer.data)
 
 """
 company
@@ -118,8 +110,13 @@ company
 @permission_classes([])
 def company_list(request):
     if request.method == "GET":
+        paginator = PageNumberPagination()
+        # paginator.page_size = 1
+        if 'size' in request.GET:
+            paginator.page_size  = request.GET['size']
         company = Company.objects.all()
-        serializer = CompanySerializer(company,many=True)
+        result_page = paginator.paginate_queryset(company, request)
+        serializer = CompanySerializer(result_page,many=True)
         return Response(serializer.data)
     elif request.method == "POST":
         serializer = CompanySerializer(data=request.data)
@@ -155,7 +152,7 @@ def company_detail(request,pk):
 @permission_classes([])
 def company_filter(request):
     # company = Company.objects.filter(comName='w', hayag='aaaaa')
-    print(request.GET)
+    # print(request.GET)
     f = {}
     for k in request.GET:   #{'comName': ['hyg'], 'hayag': ['qq1'], 'phone': ['78']}
         # print(request.GET[k])
@@ -188,8 +185,12 @@ category
 @permission_classes([])
 def category_list(request):
     if request.method == "GET":
+        paginator = PageNumberPagination()
+        if 'size' in request.GET:
+            paginator.page_size  = request.GET['size']
         category = Category.objects.all()
-        serializer = CategorySerializer(category,many=True)
+        result_page = paginator.paginate_queryset(category, request)
+        serializer = CategorySerializer(result_page,many=True)
         return Response(serializer.data)
     elif request.method == "POST":
         serializer = CategorySerializer(data=request.data)
@@ -225,7 +226,7 @@ def category_detail(request,pk):
 @permission_classes([])
 def category_filter(request):
     # company = Company.objects.filter(comName='w', hayag='aaaaa')
-    print(request.GET)
+    # print(request.GET)
     f = {}
     for k in request.GET:   #{'comName': ['hyg'], 'hayag': ['qq1'], 'phone': ['78']}
         # print(request.GET[k])
@@ -250,8 +251,12 @@ prodType
 @permission_classes([])
 def prodType_list(request):
     if request.method == "GET":
+        paginator = PageNumberPagination()
+        if 'size' in request.GET:
+            paginator.page_size  = request.GET['size']
         prodType = ProdType.objects.all()
-        serializer = ProdTypeSerializer(prodType,many=True)
+        result_page = paginator.paginate_queryset(prodType, request)
+        serializer = ProdTypeSerializer(result_page,many=True)
         return Response(serializer.data)
     elif request.method == "POST":
         serializer = ProdTypeSerializer(data=request.data)
@@ -287,7 +292,7 @@ def prodType_detail(request,pk):
 @permission_classes([])
 def prodType_filter(request):
     # company = Company.objects.filter(comName='w', hayag='aaaaa')
-    print(request.GET)
+    # print(request.GET)
     f = {}
     for k in request.GET:   #{'comName': ['hyg'], 'hayag': ['qq1'], 'phone': ['78']}
         # print(request.GET[k])
@@ -312,8 +317,12 @@ state
 @permission_classes([])
 def state_list(request):
     if request.method == "GET":
+        paginator = PageNumberPagination()
+        if 'size' in request.GET:
+            paginator.page_size  = request.GET['size']
         state = State.objects.all()
-        serializer = StateSerializer(state,many=True)
+        result_page = paginator.paginate_queryset(state, request)
+        serializer = StateSerializer(result_page,many=True)
         return Response(serializer.data)
     elif request.method == "POST":
         serializer = StateSerializer(data=request.data)
@@ -348,7 +357,7 @@ def state_detail(request,pk):
 @api_view(["GET"])
 @permission_classes([])
 def state_filter(request):
-    print(request.GET)
+    # print(request.GET)
     f = {}
     for k in request.GET:  
         f[k] = request.GET[k]  
@@ -365,15 +374,58 @@ def state_product(request,pk):
 """
 customer
 """
-@api_view(["GET"])
+@api_view(["GET","POST"])
 @permission_classes([])
 def customer_list(request):
     if request.method == "GET":
+        paginator = PageNumberPagination()
+        if 'size' in request.GET:
+            paginator.page_size  = request.GET['size']
         customer = Customer.objects.all()
-        serializer = CustomerSerializer(customer,many=True)
+        result_page = paginator.paginate_queryset(customer, request)
+        serializer = CustomerSerializer(result_page,many=True)
         return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = CustomerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["GET","PUT","DELETE"])
+@permission_classes([])
+def customer_detail(request,pk):
+    try:
+        customer = Customer.objects.get(pk=pk)
+    except Customer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializers =CustomerSerializer(customer)
+        return Response(serializers.data)
+
+    elif request.method == "PUT":
+        serializers = CustomerSerializer(customer, data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        customer.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["GET"])
+@permission_classes([])
+def customer_filter(request):
+    # print(request.GET)
+    f = {}
+    for k in request.GET:  
+        f[k] = request.GET[k]  
+    customer = Customer.objects.filter(**f)
+    serializers =CustomerSerializer(customer,many=True)
+    return Response(serializers.data)
 
 
 

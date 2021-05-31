@@ -117,10 +117,10 @@ def test_detial2(request, pk):
 #         pagination = PageNumberPagination()
 #         if 'size' in request.GET:
 #             pagination.page_size = request.GET['size']
-#             test2 = Test2.objects.all()
-#             resuilt_page =pagination.paginate_queryset(test2,request)
-#             serializers = Test2Serializer(resuilt_page,many = True)
-#             return Response(serializers.data)
+#         test2 = Test2.objects.all()
+#         resuilt_page =pagination.paginate_queryset(test2,request)
+#         serializers = Test2Serializer(resuilt_page,many = True)
+#         return Response(serializers.data)
 
 
 # class Test2(models.Model):
@@ -157,9 +157,42 @@ def test_detial2(request, pk):
 #         serializers = Test2Serializer(test2)
 #         return Response(serializers.data)
 
+# @api_view(["GET"])
+# @permission_classes([])
+# def product_list(request):
+#     """
+#     List all code products, or create a new snippet.
+#     """
+#     if request.method == "GET":
+#         paginator = PageNumberPagination()
+#         if 'size' in request.GET:
+#             paginator.page_size  = request.GET['size']
+#         products = Product.objects.all()
+#         result_page = paginator.paginate_queryset(products, request)
+
+#         serializer = ProductSerializer(result_page, many=True)
+#         # serializer = ProductSerializer(products, many=True)
+       
+#         return Response(serializer.data)
 
 
 
+
+
+
+# @api_view(["GET","POST"])
+# @permission_classes([])
+# def category_list(request):
+#     if request.method == "GET":
+#         category = Category.objects.all()
+#         serializer = CategorySerializer(category,many=True)
+#         return Response(serializer.data)
+#     elif request.method == "POST":
+#         serializer = CategorySerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data,status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
 
 
 
