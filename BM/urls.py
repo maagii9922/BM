@@ -22,6 +22,7 @@ urlpatterns = [
     path('home', views.home),
     path('product', views.product_list),
     path('product/<int:pk>', views.product_detail),
+    path('product/filter',views.product_filter),
     path('company', views.company_list),
     path('company/<int:pk>',views.company_detail),
     path('company/filter',views.company_filter),
@@ -42,5 +43,4 @@ urlpatterns = [
     path('state/<int:pk>',views.state_detail),
     path('state/filter',views.state_filter),
     path('state/product/<int:pk>',views.state_product),
-    # path('product/state', views.product_state),
 ]

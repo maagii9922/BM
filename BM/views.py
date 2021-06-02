@@ -15,62 +15,6 @@ from django.db.models import Count
 
 
 def home(request):
-    # products = Product.objects.get(state = 1)
-    # products.save()
-    # print(products)
-
-    # products = Product.objects.get(state = 1)
-    # states = State.objects.get(stateName = 'tsu')
-    # products.state = states
-    # products.save()
-    # print(products)
-
-    # products = Product.objects.get(pk=1)
-    # company = Company.objects.get(comName = 'w')
-    # products.company = company
-    # products.save()
-    # print(products)
-
-    # customer = Customer.objects.get(company = 1)
-    # company = Company.objects.get(comName = 'w')
-    # company.save()
-    # customer.company = company
-    # customer.save()
-    # print(customer)
-    
-    # company = Company(comName = 'sss', hayag = 'ss', phone = 999)
-    # company.save()
-    # customer = Customer.objects.get(pk = 1)
-    # customer.company = company
-    # customer.save()
-    # print(customer)
-    
-    # company = Company(comName = 'qq', hayag = 'qq', phone = 333)
-    # company.save()
-    # customer = Customer(name = 'nomuka',code = '12',company = company,mail = 'nnn',password = '2112')
-    # customer.save()
-    # print(customer)
-
-    # category = Category (catName = 'dd')
-    # category.save()
-    # prodType = ProdType (typeName = 'buts')
-    # prodType.save()
-    # state = State (stateName = 'ccc')
-    # state.save()
-    # company = Company(comName = 'qq', hayag = 'qq', phone = 333)
-    # company.save()
-    # customer = Customer(name = 'nomuka',code = '12',company = company,mail = 'nnn',password = '2112')
-    # customer.save()
-    # products = Product (prodName = 'xx',zCode = 12,prodType = prodType,zzCode = 1212,price = 2323,hemNegj = 1,hudNegj = 1,company = company,erNershil = 'dd',emHelber = 'tab',paiz = 'hh',uildwerlegch = 'vvv',uNiiluulegch = 'sss',category = category,borBoloh = 'no',hudAwch = 'no',state = state)
-    # products.save()
-    # print(products)
-
-    # products = Product.objects.get(company__id = 1)
-    # print(products)
-
-    # products = Product.objects.get(company__comName = 'qq')
-    # print(products)
-
     return HttpResponse("hello")
 
 """
@@ -88,6 +32,12 @@ def product_list(request):
         result_page = pagination.paginate_queryset(products,request)
         serializer = ProductSerializer(result_page, many=True)
         return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET"])
 @permission_classes([])
@@ -100,6 +50,32 @@ def product_detail(request, pk):
     if request.method == "GET":
         serializer = ProductSerializer(product)
         return Response(serializer.data)
+
+    elif request.method == "PUT":
+        serializers = ProductSerializer(product, data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["GET"])
+@permission_classes([])
+def product_filter(request):
+    # company = Company.objects.filter(comName='w', hayag='aaaaa')
+    # print(request.GET)
+    f = {}
+    for k in request.GET:   #{'comName': ['hyg'], 'hayag': ['qq1'], 'phone': ['78']}
+        # print(request.GET[k])
+        f[k] = request.GET[k]   #{'comName': 'hyg', 'hayag': 'qq1', 'phone': '78'}
+    # print(f)
+    product = Product.objects.filter(**f)
+    serializers =ProductSerializer(product,many=True)
+    return Response(serializers.data)
 
 
 """
